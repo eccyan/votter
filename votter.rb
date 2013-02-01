@@ -1,9 +1,8 @@
-require 'nokogiri'
 require 'open-uri'
 require "net/http"
 require "uri"
-require "pry"
 require "csv"
+require "pry"
 require "ipaddress"
 require 'timeout'
 
@@ -28,32 +27,22 @@ end
 
 ips.each do |ip|
   begin
-    uri = URI.parse("http://example.com/vote/")
-
-    page = open(uri, proxy:"http://#{ip}:8080")
-    # ページopen 時のクッキーを取得しAPIポスト時に使う
-    cookie = page.meta['set-cookie'].split('; ',2)[0]
-    doc = Nokogiri::HTML(page)
+    puts "start with #{ip}"
+    uri = URI.parse("http://www.jaftma-jaff.com/idol")
     
-    # ページからTokenを取得
-    token = nil
-    doc.xpath('//html/body/form[1]/input[2]').each do |input|
-      token = input.attr('value')
-    end
-    
-    api_uri = URI.parse("http://example.com/vote/poll.php")
+    api_uri = URI.parse("http://www.jaftma-jaff.com/idol/index.php")
     
     proxy = Net::HTTP::Proxy(ip, 8080)
     http = proxy.new(api_uri.host, api_uri.port)
     
     http.start do |h|
       request = Net::HTTP::Post.new(api_uri.request_uri)
-      request.set_form_data({"answer" => "yes", "token" => token, "question_id" => "1"})
-      request["Cookie"] = cookie
+      request.set_form_data({"date" => "#{Time.now.to_i}0000'", "act" => "vote", "id" => "3"})
+      #request["Cookie"] = cookie
       request["Host"] = uri.host
       request["Origin"] = uri.host
       request["Referer"] = "#{uri}"
-      request["User-Agent"] = "from eccyan" # UA はブラウザのUAに変更しましょう！
+      request["User-Agent"] = "Mozilla/5.0 (Linux; U; Android 2.3.6; en-us; Nexus S Build/GRK39F) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"
     
       response = h.request(request)
       if response.code == '302'
