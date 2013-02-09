@@ -45,12 +45,18 @@ ips.each do |ip|
       request["User-Agent"] = "Mozilla/5.0 (Linux; U; Android 2.3.6; en-us; Nexus S Build/GRK39F) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"
     
       response = h.request(request)
-      if response.code == '302'
+      if response.code == '200'
         puts "#{ip}:succeeded"
+
+        sleep_seconds = (rand(10) * 60)
+        puts "sleeping... #{sleep_seconds}"
+
+        sleep sleep_seconds
       else
         puts "#{ip}:failed #{response}"
       end
     end
+
 
   rescue => e
     # とりあえず例外はログに残して無視
